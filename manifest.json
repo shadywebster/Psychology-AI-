@@ -1,0 +1,17 @@
+{
+  "name": "CancerianMind",
+  "short_name": "CancerianMind",
+  "description": "Your personal psychology AI — therapy chat, mood tracking, and mental wellness support.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0c10",
+  "theme_color": "#5ecfb1",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "categories": ["health", "lifestyle", "medical"],
+  "lang": "en",
+  "dir": "ltr"
+}
