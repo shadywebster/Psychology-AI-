@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CancerianMind — Your Psychology Companion</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --bg2: #13161e;
+    --bg3: #1a1e2a;
+    --surface: #1f2434;
+    --surface2: #262c3e;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e8e6f0;
+    --text2: #9b98b0;
+    --text3: #6b6880;
+    --accent: #7c6af7;
+    --accent2: #a594ff;
+    --accent-glow: rgba(124,106,247,0.25);
+    --teal: #4ecdc4;
+    --coral: #ff6b6b;
+    --amber: #ffd166;
+    --green: #6bcb77;
+    --red: #ff6b6b;
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-sans: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:var(--font-sans); font-size:15px; line-height:1.6; min-height:100vh; overflow-x:hidden; }
+
+  /* Background texture */
+  body::before {
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background: radial-gradient(ellipse 80% 60% at 20% 10%, rgba(124,106,247,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(78,205,196,0.05) 0%, transparent 60%);
+  }
+
+  /* ── Layout ── */
+  .shell { display:flex; height:100vh; position:relative; z-index:1; }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width:260px; min-width:260px; background:var(--bg2); border-right:1px solid var(--border);
+    display:flex; flex-direction:column; padding:0;
+  }
+  .sidebar-logo {
+    padding:24px 20px 20px;
+    border-bottom:1px solid var(--border);
+  }
+  .logo-mark {
+    font-family:var(--font-serif); font-size:22px; color:var(--text);
+    display:flex; align-items:center; gap:8px;
+  }
+  .logo-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); }
+  .logo-sub { font-size:11px; color:var(--text3); font-family:var(--font-sans); letter-spacing:0.08em; margin-top:2px; }
+
+  .nav { padding:16px 12px; flex:1; overflow-y:auto; }
+  .nav-section { margin-bottom:24px; }
+  .nav-label { font-size:10px; letter-spacing:0.1em; color:var(--text3); padding:0 8px 8px; text-transform:uppercase; }
+  .nav-item {
+    display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:var(--radius-sm);
+    cursor:pointer; color:var(--text2); font-size:13.5px; transition:all 0.15s; margin-bottom:2px;
+  }
+  .nav-item:hover { background:var(--surface); color:var(--text); }
+  .nav-item.active { background:var(--surface); color:var(--text); }
+  .nav-item.active .nav-icon { color:var(--accent2); }
+  .nav-icon { font-size:16px; width:20px; text-align:center; }
+  .nav-badge {
+    margin-left:auto; background:var(--accent); color:#fff; font-size:10px;
+    padding:1px 6px; border-radius:99px; font-weight:500;
+  }
+
+  .sidebar-footer {
+    padding:16px 12px; border-top:1px solid var(--border);
+  }
+  .user-card {
+    display:flex; align-items:center; gap:10px; padding:8px 10px;
+    border-radius:var(--radius-sm); cursor:pointer;
+  }
+  .user-card:hover { background:var(--surface); }
+  .avatar {
+    width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--teal));
+    display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; color:#fff; flex-shrink:0;
+  }
+  .user-name { font-size:13px; color:var(--text); font-weight:500; }
+  .user-role { font-size:11px; color:var(--text3); }
+
+  /* ── Main ── */
+  .main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+
+  /* ── Top bar ── */
+  .topbar {
+    height:58px; background:var(--bg2); border-bottom:1px solid var(--border);
+    display:flex; align-items:center; padding:0 24px; gap:16px; flex-shrink:0;
+  }
+  .topbar-title { font-family:var(--font-serif); font-size:18px; color:var(--text); }
+  .topbar-subtitle { font-size:12px; color:var(--text3); margin-left:2px; }
+  .topbar-actions { margin-left:auto; display:flex; gap:8px; }
+  .btn {
+    padding:7px 14px; border-radius:var(--radius-sm); font-size:13px; font-family:var(--font-sans);
+    cursor:pointer; transition:all 0.15s; border:none; font-weight:500;
+  }
+  .btn-ghost { background:transparent; color:var(--text2); border:1px solid var(--border2); }
+  .btn-ghost:hover { background:var(--surface); color:var(--text); }
+  .btn-primary { background:var(--accent); color:#fff; }
+  .btn-primary:hover { background:var(--accent2); }
+
+  /* ── View areas ── */
+  .view { display:none; flex:1; overflow:hidden; flex-direction:column; }
+  .view.active { display:flex; }
+
+  /* ── Dashboard ── */
+  .dashboard-scroll { flex:1; overflow-y:auto; padding:28px 28px; }
+  .dash-greeting { margin-bottom:28px; }
+  .dash-greeting h1 { font-family:var(--font-serif); font-size:28px; font-weight:400; color:var(--text); }
+  .dash-greeting p { color:var(--text2); font-size:14px; margin-top:4px; }
+
+  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:28px; }
+  .stat-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px 20px;
+  }
+  .stat-label { font-size:11px; color:var(--text3); letter-spacing:0.06em; text-transform:uppercase; }
+  .stat-value { font-size:28px; font-family:var(--font-serif); color:var(--text); margin:4px 0 2px; }
+  .stat-delta { font-size:12px; }
+  .stat-delta.up { color:var(--green); }
+  .stat-delta.down { color:var(--coral); }
+
+  .dash-grid { display:grid; grid-template-columns:1fr 340px; gap:18px; }
+  .card {
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px;
+  }
+  .card-title { font-size:13px; font-weight:500; color:var(--text); margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; }
+  .card-title span { color:var(--text3); font-size:12px; cursor:pointer; }
+  .card-title span:hover { color:var(--accent2); }
+
+  .mood-chart { display:flex; align-items:flex-end; gap:8px; height:80px; margin-bottom:12px; }
+  .mood-bar { flex:1; border-radius:4px 4px 0 0; transition:height 0.3s; cursor:pointer; }
+  .mood-bar:hover { opacity:0.8; }
+  .mood-days { display:flex; gap:8px; }
+  .mood-day { flex:1; text-align:center; font-size:11px; color:var(--text3); }
+
+  .module-list { display:flex; flex-direction:column; gap:10px; }
+  .module-item {
+    display:flex; align-items:center; gap:12px; padding:12px 14px;
+    background:var(--bg3); border-radius:var(--radius-sm); cursor:pointer; transition:all 0.15s;
+    border:1px solid transparent;
+  }
+  .module-item:hover { border-color:var(--border2); background:var(--surface2); }
+  .module-icon { font-size:20px; width:36px; height:36px; border-radius:8px; background:var(--surface); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .module-name { font-size:13.5px; color:var(--text); font-weight:500; }
+  .module-desc { font-size:12px; color:var(--text3); }
+  .module-arrow { margin-left:auto; color:var(--text3); }
+
+  .recent-sessions { display:flex; flex-direction:column; gap:8px; }
+  .session-item { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); }
+  .session-item:last-child { border:none; }
+  .session-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .session-info { flex:1; }
+  .session-name { font-size:13px; color:var(--text); }
+  .session-time { font-size:11px; color:var(--text3); }
+  .session-badge { font-size:11px; padding:2px 8px; border-radius:99px; }
+
+  /* ── Chat View ── */
+  .chat-container { flex:1; display:flex; overflow:hidden; }
+  .chat-main { flex:1; display:flex; flex-direction:column; }
+  .chat-mode-bar {
+    display:flex; gap:8px; padding:12px 20px; border-bottom:1px solid var(--border); flex-shrink:0;
+  }
+  .mode-btn {
+    padding:6px 14px; border-radius:99px; font-size:12.5px; cursor:pointer;
+    border:1px solid var(--border2); color:var(--text2); background:transparent; font-family:var(--font-sans);
+    transition:all 0.15s;
+  }
+  .mode-btn:hover { background:var(--surface); color:var(--text); }
+  .mode-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+  .messages {
+    flex:1; overflow-y:auto; padding:24px 20px; display:flex; flex-direction:column; gap:18px;
+  }
+  .msg { display:flex; gap:12px; max-width:680px; }
+  .msg.user { flex-direction:row-reverse; align-self:flex-end; }
+  .msg-avatar {
+    width:34px; height:34px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:14px;
+  }
+  .msg-avatar.ai { background:linear-gradient(135deg,var(--accent),var(--teal)); color:#fff; }
+  .msg-avatar.user { background:linear-gradient(135deg,var(--coral),var(--amber)); color:#fff; }
+  .msg-bubble {
+    padding:12px 16px; border-radius:16px; font-size:14px; line-height:1.65;
+  }
+  .msg.ai .msg-bubble { background:var(--surface); color:var(--text); border-bottom-left-radius:4px; }
+  .msg.user .msg-bubble { background:var(--accent); color:#fff; border-bottom-right-radius:4px; }
+  .msg-meta { font-size:11px; color:var(--text3); margin-top:5px; }
+  .msg.user .msg-meta { text-align:right; }
+
+  .typing-indicator { display:flex; gap:4px; align-items:center; padding:4px 0; }
+  .typing-dot { width:7px; height:7px; border-radius:50%; background:var(--accent2); animation:typing 1.2s infinite; }
+  .typing-dot:nth-child(2) { animation-delay:0.2s; }
+  .typing-dot:nth-child(3) { animation-delay:0.4s; }
+  @keyframes typing { 0%,60%,100%{opacity:0.3;transform:scale(1)} 30%{opacity:1;transform:scale(1.2)} }
+
+  .chat-input-area {
+    padding:16px 20px; border-top:1px solid var(--border); flex-shrink:0;
+  }
+  .input-row {
+    display:flex; gap:10px; align-items:flex-end;
+    background:var(--surface); border:1px solid var(--border2); border-radius:var(--radius); padding:10px 14px;
+  }
+  .input-row:focus-within { border-color:var(--accent); }
+  .chat-input {
+    flex:1; background:transparent; border:none; outline:none; resize:none;
+    color:var(--text); font-family:var(--font-sans); font-size:14px; line-height:1.5;
+    min-height:22px; max-height:120px; overflow-y:auto;
+  }
+  .chat-input::placeholder { color:var(--text3); }
+  .send-btn {
+    width:34px; height:34px; border-radius:8px; background:var(--accent); border:none;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:all 0.15s; flex-shrink:0;
+  }
+  .send-btn:hover { background:var(--accent2); transform:scale(1.05); }
+  .send-btn svg { width:16px; height:16px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+  .crisis-banner {
+    display:none; background:rgba(255,107,107,0.12); border:1px solid rgba(255,107,107,0.3);
+    border-radius:var(--radius-sm); padding:10px 14px; margin-bottom:10px;
+    font-size:13px; color:#ff9999;
+  }
+  .crisis-banner.visible { display:block; }
+  .crisis-banner a { color:var(--coral); }
+
+  /* Sidebar right of chat */
+  .chat-sidebar {
+    width:260px; border-left:1px solid var(--border); background:var(--bg2); padding:20px;
+    overflow-y:auto;
+  }
+  .cs-title { font-size:12px; font-weight:500; color:var(--text3); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:14px; }
+  .cs-mood { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+  .mood-chip {
+    padding:5px 12px; border-radius:99px; font-size:12px; cursor:pointer;
+    border:1px solid var(--border2); color:var(--text2); background:transparent; font-family:var(--font-sans);
+    transition:all 0.15s;
+  }
+  .mood-chip:hover { background:var(--surface); color:var(--text); }
+  .mood-chip.selected { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+  .cs-techniques { margin-bottom:20px; }
+  .technique-card {
+    padding:10px 12px; background:var(--bg3); border-radius:var(--radius-sm);
+    margin-bottom:8px; cursor:pointer; border:1px solid transparent; transition:all 0.15s;
+  }
+  .technique-card:hover { border-color:var(--border2); }
+  .technique-name { font-size:13px; color:var(--text); font-weight:500; }
+  .technique-desc { font-size:11px; color:var(--text3); margin-top:2px; }
+
+  .cs-resources { }
+  .resource-link { display:block; font-size:13px; color:var(--teal); padding:4px 0; text-decoration:none; }
+  .resource-link:hover { color:var(--accent2); }
+
+  /* ── Assessment View ── */
+  .assessment-scroll { flex:1; overflow-y:auto; padding:28px; }
+  .assessment-header { margin-bottom:28px; }
+  .assessment-header h2 { font-family:var(--font-serif); font-size:26px; font-weight:400; }
+  .assessment-header p { color:var(--text2); font-size:14px; margin-top:6px; }
+
+  .assessment-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:32px; }
+  .assessment-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:20px; cursor:pointer; transition:all 0.2s;
+  }
+  .assessment-card:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .assessment-card.active-card { border-color:var(--accent); background:var(--surface2); }
+  .ac-icon { font-size:24px; margin-bottom:12px; }
+  .ac-name { font-size:15px; font-weight:500; color:var(--text); margin-bottom:4px; }
+  .ac-desc { font-size:12px; color:var(--text3); }
+  .ac-tag { display:inline-block; margin-top:10px; font-size:11px; padding:2px 8px; border-radius:99px; }
+
+  .questionnaire { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px; }
+  .q-title { font-family:var(--font-serif); font-size:20px; margin-bottom:6px; }
+  .q-subtitle { font-size:13px; color:var(--text3); margin-bottom:24px; }
+  .progress-bar-wrap { background:var(--bg3); border-radius:99px; height:4px; margin-bottom:24px; }
+  .progress-bar-fill { height:4px; border-radius:99px; background:var(--accent); transition:width 0.3s; }
+  .q-item { margin-bottom:24px; }
+  .q-text { font-size:14px; color:var(--text); margin-bottom:12px; font-weight:500; }
+  .q-options { display:flex; gap:8px; flex-wrap:wrap; }
+  .q-opt {
+    padding:7px 14px; border-radius:var(--radius-sm); border:1px solid var(--border2);
+    font-size:13px; color:var(--text2); cursor:pointer; background:transparent;
+    font-family:var(--font-sans); transition:all 0.15s;
+  }
+  .q-opt:hover { background:var(--surface2); color:var(--text); }
+  .q-opt.selected { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .q-nav { display:flex; justify-content:space-between; align-items:center; margin-top:20px; }
+  .q-counter { font-size:12px; color:var(--text3); }
+
+  .result-panel { display:none; }
+  .result-panel.visible { display:block; }
+  .result-score-ring { width:100px; height:100px; margin:0 auto 16px; position:relative; }
+  .result-score-ring svg { width:100%; height:100%; transform:rotate(-90deg); }
+  .ring-bg { fill:none; stroke:var(--bg3); stroke-width:8; }
+  .ring-fill { fill:none; stroke:var(--accent); stroke-width:8; stroke-linecap:round; transition:stroke-dashoffset 1s ease; }
+  .ring-text { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .ring-num { font-size:22px; font-family:var(--font-serif); color:var(--text); }
+  .ring-label { font-size:10px; color:var(--text3); }
+  .result-heading { text-align:center; font-family:var(--font-serif); font-size:22px; margin-bottom:8px; }
+  .result-text { text-align:center; font-size:13px; color:var(--text2); max-width:480px; margin:0 auto 20px; }
+  .result-recs { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .rec-item { background:var(--bg3); border-radius:var(--radius-sm); padding:14px; text-align:center; }
+  .rec-icon { font-size:20px; margin-bottom:6px; }
+  .rec-text { font-size:12px; color:var(--text2); }
+
+  /* ── Education View ── */
+  .edu-scroll { flex:1; overflow-y:auto; padding:28px; }
+  .edu-header { margin-bottom:28px; }
+  .edu-header h2 { font-family:var(--font-serif); font-size:26px; font-weight:400; }
+  .edu-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:18px; }
+  .edu-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px; cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden;
+  }
+  .edu-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+  .edu-card.purple::before { background:var(--accent); }
+  .edu-card.teal::before { background:var(--teal); }
+  .edu-card.coral::before { background:var(--coral); }
+  .edu-card.amber::before { background:var(--amber); }
+  .edu-card:hover { transform:translateY(-2px); border-color:var(--border2); }
+  .edu-tag { font-size:11px; color:var(--text3); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:10px; }
+  .edu-title { font-family:var(--font-serif); font-size:18px; margin-bottom:8px; }
+  .edu-desc { font-size:13px; color:var(--text2); line-height:1.6; }
+  .edu-footer { display:flex; align-items:center; justify-content:space-between; margin-top:16px; padding-top:14px; border-top:1px solid var(--border); }
+  .edu-read { font-size:12px; color:var(--text3); }
+  .edu-level { font-size:11px; padding:3px 8px; border-radius:99px; background:var(--bg3); color:var(--text3); }
+
+  /* Topic Detail */
+  .topic-detail { display:none; position:absolute; inset:0; background:var(--bg); z-index:10; overflow-y:auto; padding:32px; }
+  .topic-detail.open { display:block; }
+  .topic-back { display:inline-flex; align-items:center; gap:6px; color:var(--text2); cursor:pointer; font-size:13px; margin-bottom:24px; }
+  .topic-back:hover { color:var(--accent2); }
+  .topic-title { font-family:var(--font-serif); font-size:32px; font-weight:400; margin-bottom:8px; }
+  .topic-meta { font-size:13px; color:var(--text3); margin-bottom:28px; }
+  .topic-body { max-width:640px; }
+  .topic-body p { font-size:14px; color:var(--text2); line-height:1.8; margin-bottom:16px; }
+  .topic-body h3 { font-family:var(--font-serif); font-size:18px; color:var(--text); margin-bottom:10px; margin-top:20px; }
+  .topic-body ul { padding-left:20px; color:var(--text2); font-size:14px; line-height:1.8; }
+  .topic-ask-btn { margin-top:24px; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width:5px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--surface2); border-radius:99px; }
+
+  /* Animations */
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+  .msg { animation:fadeIn 0.25s ease; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark"><span class="logo-dot"></span> CancerianMind</div>
+      <div class="logo-sub">Psychology Companion</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-section">
+        <div class="nav-label">Main</div>
+        <div class="nav-item active" onclick="showView('dashboard')">
+          <span class="nav-icon">⬡</span> Dashboard
+        </div>
+        <div class="nav-item" onclick="showView('chat')">
+          <span class="nav-icon">💬</span> AI Chat
+          <span class="nav-badge">Live</span>
+        </div>
+        <div class="nav-item" onclick="showView('assessment')">
+          <span class="nav-icon">📋</span> Assessments
+        </div>
+        <div class="nav-item" onclick="showView('education')">
+          <span class="nav-icon">📖</span> Learn
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Insights</div>
+        <div class="nav-item" onclick="showView('dashboard')">
+          <span class="nav-icon">📈</span> Mood Tracker
+        </div>
+        <div class="nav-item" onclick="showView('dashboard')">
+          <span class="nav-icon">🎯</span> Goals
+        </div>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="avatar">A</div>
+        <div>
+          <div class="user-name">Alex</div>
+          <div class="user-role">Member</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="main">
+
+    <!-- Top bar -->
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbar-title">Dashboard</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="showView('assessment')">Take Assessment</button>
+        <button class="btn btn-primary" onclick="showView('chat')">Start Session</button>
+      </div>
+    </div>
+
+    <!-- ── Dashboard View ── -->
+    <div class="view active" id="view-dashboard">
+      <div class="dashboard-scroll">
+        <div class="dash-greeting">
+          <h1>Good evening, Alex 🌙</h1>
+          <p>Here's your mental wellness overview for this week.</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Mood Score</div>
+            <div class="stat-value">7.4</div>
+            <div class="stat-delta up">↑ +0.6 this week</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Sessions</div>
+            <div class="stat-value">12</div>
+            <div class="stat-delta up">↑ 3 this week</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Streak</div>
+            <div class="stat-value">7d</div>
+            <div class="stat-delta up">↑ Personal best!</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Last PHQ-9</div>
+            <div class="stat-value">8</div>
+            <div class="stat-delta up">↓ Mild (improved)</div>
+          </div>
+        </div>
+
+        <div class="dash-grid">
+          <div>
+            <div class="card" style="margin-bottom:18px">
+              <div class="card-title">Mood this week <span onclick="showView('chat')">View all →</span></div>
+              <div class="mood-chart" id="mood-chart"></div>
+              <div class="mood-days" id="mood-days"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Recent Sessions <span onclick="showView('chat')">Continue →</span></div>
+              <div class="recent-sessions">
+                <div class="session-item">
+                  <div class="session-dot" style="background:var(--teal)"></div>
+                  <div class="session-info">
+                    <div class="session-name">CBT Anxiety — breathing exercises</div>
+                    <div class="session-time">Today · 18 mins</div>
+                  </div>
+                  <span class="session-badge" style="background:rgba(78,205,196,0.15);color:var(--teal)">Completed</span>
+                </div>
+                <div class="session-item">
+                  <div class="session-dot" style="background:var(--accent)"></div>
+                  <div class="session-info">
+                    <div class="session-name">PHQ-9 Depression Screening</div>
+                    <div class="session-time">Yesterday · 8 mins</div>
+                  </div>
+                  <span class="session-badge" style="background:rgba(124,106,247,0.15);color:var(--accent2)">Score: 8</span>
+                </div>
+                <div class="session-item">
+                  <div class="session-dot" style="background:var(--amber)"></div>
+                  <div class="session-info">
+                    <div class="session-name">Sleep & stress connection</div>
+                    <div class="session-time">2 days ago · 12 mins</div>
+                  </div>
+                  <span class="session-badge" style="background:rgba(255,209,102,0.15);color:var(--amber)">Explored</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card" style="margin-bottom:18px">
+              <div class="card-title">Modules</div>
+              <div class="module-list">
+                <div class="module-item" onclick="showView('chat')">
+                  <div class="module-icon">🧘</div>
+                  <div>
+                    <div class="module-name">Therapy Support</div>
+                    <div class="module-desc">CBT, mindfulness, coping</div>
+                  </div>
+                  <span class="module-arrow">›</span>
+                </div>
+                <div class="module-item" onclick="showView('assessment')">
+                  <div class="module-icon">📊</div>
+                  <div>
+                    <div class="module-name">Assessments</div>
+                    <div class="module-desc">PHQ-9, GAD-7, PSS</div>
+                  </div>
+                  <span class="module-arrow">›</span>
+                </div>
+                <div class="module-item" onclick="showView('education')">
+                  <div class="module-icon">📚</div>
+                  <div>
+                    <div class="module-name">Psychology Library</div>
+                    <div class="module-desc">Evidence-based resources</div>
+                  </div>
+                  <span class="module-arrow">›</span>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Tip of the day</div>
+              <p style="font-size:13px;color:var(--text2);line-height:1.7;font-style:italic;font-family:var(--font-serif)">
+                "You don't have to control your thoughts. You just have to stop letting them control you."
+              </p>
+              <p style="font-size:12px;color:var(--text3);margin-top:8px">— Dan Millman</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Chat View ── -->
+    <div class="view" id="view-chat">
+      <div class="chat-container">
+        <div class="chat-main">
+          <div class="chat-mode-bar">
+            <button class="mode-btn active" onclick="setMode(this,'therapy')">🧘 Therapy Support</button>
+            <button class="mode-btn" onclick="setMode(this,'assessment')">📋 Assessment</button>
+            <button class="mode-btn" onclick="setMode(this,'education')">📖 Educational</button>
+            <button class="mode-btn" onclick="setMode(this,'crisis')">🆘 Crisis Support</button>
+          </div>
+          <div class="messages" id="messages">
+            <div class="msg ai">
+              <div class="msg-avatar ai">🧠</div>
+              <div>
+                <div class="msg-bubble">Hello! I'm your CancerianMind companion. I'm here to support your mental wellness journey.<br><br>
+                I can help you with <strong>therapy techniques</strong>, run <strong>psychological assessments</strong>, explain psychology concepts, or simply provide a space to talk. How are you feeling today?</div>
+                <div class="msg-meta">CancerianMind · Just now</div>
+              </div>
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <div id="crisis-banner" class="crisis-banner">
+              🆘 It sounds like you may be going through a very difficult time. If you're in crisis, please reach out to <a href="#">iCall: 9152987821</a> or <a href="#">Vandrevala Foundation: 1860-2662-345</a> (India, 24/7).
+            </div>
+            <div class="input-row">
+              <textarea class="chat-input" id="chat-input" rows="1" placeholder="Share what's on your mind…" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+              <button class="send-btn" onclick="sendMessage()">
+                <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="chat-sidebar">
+          <div class="cs-title">How are you feeling?</div>
+          <div class="cs-mood">
+            <button class="mood-chip" onclick="toggleMood(this)">😰 Anxious</button>
+            <button class="mood-chip" onclick="toggleMood(this)">😔 Sad</button>
+            <button class="mood-chip" onclick="toggleMood(this)">😤 Stressed</button>
+            <button class="mood-chip" onclick="toggleMood(this)">😴 Tired</button>
+            <button class="mood-chip" onclick="toggleMood(this)">🙂 Okay</button>
+            <button class="mood-chip" onclick="toggleMood(this)">😊 Good</button>
+          </div>
+          <div class="cs-title">Techniques</div>
+          <div class="cs-techniques">
+            <div class="technique-card" onclick="insertTechnique('4-7-8 breathing')">
+              <div class="technique-name">4-7-8 Breathing</div>
+              <div class="technique-desc">Activate calm nervous system</div>
+            </div>
+            <div class="technique-card" onclick="insertTechnique('5-4-3-2-1 grounding')">
+              <div class="technique-name">5-4-3-2-1 Grounding</div>
+              <div class="technique-desc">Anchor to the present moment</div>
+            </div>
+            <div class="technique-card" onclick="insertTechnique('cognitive reframing')">
+              <div class="technique-name">Cognitive Reframing</div>
+              <div class="technique-desc">Challenge negative thoughts</div>
+            </div>
+            <div class="technique-card" onclick="insertTechnique('body scan meditation')">
+              <div class="technique-name">Body Scan</div>
+              <div class="technique-desc">Release physical tension</div>
+            </div>
+          </div>
+          <div class="cs-title">Resources</div>
+          <div class="cs-resources">
+            <a class="resource-link" href="#">iCall Helpline (India)</a>
+            <a class="resource-link" href="#">Vandrevala Foundation</a>
+            <a class="resource-link" href="#">NIMHANS Bengaluru</a>
+            <a class="resource-link" href="#">The Live Love Laugh</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Assessment View ── -->
+    <div class="view" id="view-assessment" style="position:relative">
+      <div class="assessment-scroll" id="assessment-scroll">
+        <div class="assessment-header">
+          <h2>Psychological Assessments</h2>
+          <p>Validated screening tools to understand your mental health. Results are private and for self-awareness only.</p>
+        </div>
+        <div class="assessment-cards">
+          <div class="assessment-card" onclick="startAssessment('phq9')">
+            <div class="ac-icon">😔</div>
+            <div class="ac-name">PHQ-9</div>
+            <div class="ac-desc">Patient Health Questionnaire. Screens for depression severity.</div>
+            <div class="ac-tag" style="background:rgba(124,106,247,0.15);color:var(--accent2)">9 questions · 3 min</div>
+          </div>
+          <div class="assessment-card" onclick="startAssessment('gad7')">
+            <div class="ac-icon">😰</div>
+            <div class="ac-name">GAD-7</div>
+            <div class="ac-desc">Generalised Anxiety Disorder scale. Measures anxiety levels.</div>
+            <div class="ac-tag" style="background:rgba(78,205,196,0.15);color:var(--teal)">7 questions · 2 min</div>
+          </div>
+          <div class="assessment-card" onclick="startAssessment('pss')">
+            <div class="ac-icon">😤</div>
+            <div class="ac-name">PSS-10</div>
+            <div class="ac-desc">Perceived Stress Scale. How overwhelmed do you feel?</div>
+            <div class="ac-tag" style="background:rgba(255,107,107,0.15);color:var(--coral)">10 questions · 4 min</div>
+          </div>
+        </div>
+        <!-- Active questionnaire -->
+        <div class="questionnaire" id="questionnaire" style="display:none">
+          <div class="q-title" id="q-title">PHQ-9 Assessment</div>
+          <div class="q-subtitle" id="q-subtitle">Over the last 2 weeks, how often have you been bothered by the following?</div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="q-progress" style="width:0%"></div>
+          </div>
+          <div id="q-body"></div>
+          <div class="q-nav">
+            <button class="btn btn-ghost" onclick="prevQuestion()">← Back</button>
+            <span class="q-counter" id="q-counter">1 / 9</span>
+            <button class="btn btn-primary" onclick="nextQuestion()">Next →</button>
+          </div>
+        </div>
+        <!-- Results -->
+        <div class="questionnaire result-panel" id="result-panel">
+          <div class="result-score-ring">
+            <svg viewBox="0 0 100 100">
+              <circle class="ring-bg" cx="50" cy="50" r="42"/>
+              <circle class="ring-fill" id="ring-fill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264"/>
+            </svg>
+            <div class="ring-text">
+              <div class="ring-num" id="result-num">0</div>
+              <div class="ring-label" id="result-label">Score</div>
+            </div>
+          </div>
+          <div class="result-heading" id="result-heading">Mild Depression</div>
+          <div class="result-text" id="result-text">Your score suggests mild depressive symptoms. This is common and manageable. Consider speaking with a mental health professional.</div>
+          <div class="result-recs">
+            <div class="rec-item"><div class="rec-icon">🧘</div><div class="rec-text">Daily mindfulness practice</div></div>
+            <div class="rec-item"><div class="rec-icon">🏃</div><div class="rec-text">Light physical activity</div></div>
+            <div class="rec-item"><div class="rec-icon">💬</div><div class="rec-text">Talk to a professional</div></div>
+          </div>
+          <div style="margin-top:20px;text-align:center">
+            <button class="btn btn-primary" onclick="showView('chat')">Discuss results with AI →</button>
+            <button class="btn btn-ghost" style="margin-left:8px" onclick="resetAssessment()">Take another</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Education View ── -->
+    <div class="view" id="view-education" style="position:relative">
+      <div class="edu-scroll">
+        <div class="edu-header">
+          <h2>Psychology Library</h2>
+          <p style="color:var(--text2);font-size:14px;margin-top:4px">Evidence-based articles, concepts, and learning resources.</p>
+        </div>
+        <div class="edu-grid">
+          <div class="edu-card purple" onclick="openTopic('cbt')">
+            <div class="edu-tag">Therapy</div>
+            <div class="edu-title">Cognitive Behavioural Therapy (CBT)</div>
+            <div class="edu-desc">How the way we think shapes how we feel — and how to rewire unhelpful patterns.</div>
+            <div class="edu-footer"><span class="edu-read">6 min read</span><span class="edu-level">Beginner</span></div>
+          </div>
+          <div class="edu-card teal" onclick="openTopic('anxiety')">
+            <div class="edu-tag">Conditions</div>
+            <div class="edu-title">Understanding Anxiety Disorders</div>
+            <div class="edu-desc">The neuroscience of fear, the difference between helpful and harmful anxiety, and treatment options.</div>
+            <div class="edu-footer"><span class="edu-read">8 min read</span><span class="edu-level">Intermediate</span></div>
+          </div>
+          <div class="edu-card coral" onclick="openTopic('mindfulness')">
+            <div class="edu-tag">Practice</div>
+            <div class="edu-title">Mindfulness & Neuroplasticity</div>
+            <div class="edu-desc">How meditation physically changes the brain and builds emotional regulation capacity.</div>
+            <div class="edu-footer"><span class="edu-read">5 min read</span><span class="edu-level">Beginner</span></div>
+          </div>
+          <div class="edu-card amber" onclick="openTopic('trauma')">
+            <div class="edu-tag">Trauma</div>
+            <div class="edu-title">Trauma & the Nervous System</div>
+            <div class="edu-desc">Why trauma lives in the body, polyvagal theory, and pathways to healing.</div>
+            <div class="edu-footer"><span class="edu-read">10 min read</span><span class="edu-level">Advanced</span></div>
+          </div>
+        </div>
+      </div>
+      <!-- Topic Detail overlay -->
+      <div class="topic-detail" id="topic-detail">
+        <div class="topic-back" onclick="closeTopic()">← Back to Library</div>
+        <div class="topic-title" id="topic-title"></div>
+        <div class="topic-meta" id="topic-meta"></div>
+        <div class="topic-body" id="topic-body"></div>
+        <button class="btn btn-primary topic-ask-btn" onclick="showView('chat')">Ask AI about this →</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── Navigation ──
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  const map = {dashboard:'Dashboard',chat:'AI Chat',assessment:'Assessments',education:'Psychology Library'};
+  document.getElementById('topbar-title').textContent = map[name] || 'CancerianMind';
+  const navMap = {dashboard:0,chat:1,assessment:2,education:3};
+  const items = document.querySelectorAll('.nav-item');
+  if(navMap[name]!==undefined) items[navMap[name]].classList.add('active');
+}
+
+// ── Dashboard mood chart ──
+const moodData = [6,5,7,6,8,7,8];
+const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const colors = ['#7c6af7','#7c6af7','#4ecdc4','#7c6af7','#4ecdc4','#6bcb77','#6bcb77'];
+const chart = document.getElementById('mood-chart');
+const daysEl = document.getElementById('mood-days');
+moodData.forEach((v,i) => {
+  const bar = document.createElement('div');
+  bar.className = 'mood-bar';
+  bar.style.cssText = `height:${(v/10)*80}px;background:${colors[i]};opacity:0.8`;
+  bar.title = `${days[i]}: ${v}/10`;
+  chart.appendChild(bar);
+  const d = document.createElement('div');
+  d.className = 'mood-day'; d.textContent = days[i];
+  daysEl.appendChild(d);
+});
+
+// ── Chat ──
+let currentMode = 'therapy';
+const CRISIS_WORDS = ['suicide','kill myself','end my life','self harm','self-harm','cut myself','don\'t want to live','want to die'];
+
+const AI_RESPONSES = {
+  therapy: [
+    "I hear you. It takes courage to share that. Can you tell me more about when these feelings tend to come up? Understanding the patterns can help us find effective coping strategies.",
+    "That sounds really challenging. In CBT, we often look at the connection between our thoughts, feelings, and behaviors. What thoughts were going through your mind when this happened?",
+    "You're not alone in feeling this way. Many people experience similar challenges. Let's try a quick grounding technique together — name 5 things you can see around you right now.",
+    "Thank you for trusting me with this. What has helped you feel better in the past, even if just a little? We can build on those strategies.",
+    "That's a really important insight. Recognising patterns in our thoughts is the first step to changing them. This is the core of cognitive restructuring in CBT."
+  ],
+  assessment: [
+    "I can help you understand your scores better. Based on what you've described, it would be helpful to take the PHQ-9 assessment — it only takes 3 minutes and gives us a clearer picture.",
+    "Your responses suggest some anxious thought patterns. The GAD-7 scale is designed to measure exactly this. Would you like to take it now?",
+    "Tracking how you feel over time is powerful. Your last PHQ-9 score was 8 — shall we take it again today to see how you've progressed?"
+  ],
+  education: [
+    "Great question! The amygdala — our brain's alarm system — can become overactivated in anxiety disorders. CBT works partly by strengthening the prefrontal cortex's ability to regulate it.",
+    "Mindfulness meditation has been shown to increase grey matter density in the hippocampus and reduce amygdala reactivity. Even 10 minutes a day makes a measurable difference.",
+    "Polyvagal theory, developed by Stephen Porges, explains how our nervous system has three states: safe/social, fight-or-flight, and freeze. Trauma often locks people in the lower two states."
+  ],
+  crisis: [
+    "I'm really glad you reached out. What you're going through sounds incredibly painful, and you deserve support. Please know you're not alone. Would it be okay if I shared some immediate support resources with you?",
+    "Your life matters, and there are people who want to help. In India, iCall (9152987821) and Vandrevala Foundation (1860-2662-345) are available 24/7. Can I stay with you while you reach out?"
+  ]
+};
+
+function setMode(btn, mode) {
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentMode = mode;
+}
+
+function toggleMood(btn) {
+  btn.classList.toggle('selected');
+}
+
+function insertTechnique(t) {
+  const inp = document.getElementById('chat-input');
+  inp.value = `Can you guide me through ${t}?`;
+  inp.focus();
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function handleKey(e) {
+  if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+let typingTimeout;
+function sendMessage() {
+  const inp = document.getElementById('chat-input');
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value = ''; inp.style.height = 'auto';
+
+  // Crisis detection
+  const lower = text.toLowerCase();
+  const isCrisis = CRISIS_WORDS.some(w => lower.includes(w));
+  document.getElementById('crisis-banner').classList.toggle('visible', isCrisis);
+
+  appendMessage('user', text);
+  showTyping();
+
+  const delay = 1000 + Math.random()*1200;
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => {
+    removeTyping();
+    const mode = isCrisis ? 'crisis' : currentMode;
+    const responses = AI_RESPONSES[mode] || AI_RESPONSES.therapy;
+    const reply = responses[Math.floor(Math.random()*responses.length)];
+    appendMessage('ai', reply);
+  }, delay);
+}
+
+function appendMessage(role, text) {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const avatar = role === 'ai' ? '🧠' : 'A';
+  const avatarClass = role === 'ai' ? 'ai' : 'user';
+  div.innerHTML = `<div class="msg-avatar ${avatarClass}">${avatar}</div>
+    <div>
+      <div class="msg-bubble">${text}</div>
+      <div class="msg-meta">${role === 'ai' ? 'CancerianMind' : 'You'} · ${time}</div>
+    </div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg ai'; div.id = 'typing-msg';
+  div.innerHTML = `<div class="msg-avatar ai">🧠</div>
+    <div><div class="msg-bubble"><div class="typing-indicator">
+      <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+    </div></div></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function removeTyping() {
+  const t = document.getElementById('typing-msg');
+  if(t) t.remove();
+}
+
+// ── Assessments ──
+const ASSESSMENTS = {
+  phq9: {
+    title: 'PHQ-9 Depression Screening',
+    subtitle: 'Over the last 2 weeks, how often have you been bothered by the following?',
+    options: ['Not at all (0)','Several days (1)','More than half (2)','Nearly every day (3)'],
+    questions: [
+      'Little interest or pleasure in doing things?',
+      'Feeling down, depressed, or hopeless?',
+      'Trouble falling or staying asleep, or sleeping too much?',
+      'Feeling tired or having little energy?',
+      'Poor appetite or overeating?',
+      'Feeling bad about yourself — or that you are a failure?',
+      'Trouble concentrating on things, such as reading or TV?',
+      'Moving or speaking so slowly that others could have noticed?',
+      'Thoughts that you would be better off dead, or hurting yourself?'
+    ],
+    maxScore: 27,
+    interpret: s => s<=4?['Minimal','No depression likely. Maintain healthy habits.',['#6bcb77','var(--green)']]:
+      s<=9?['Mild','Mild depressive symptoms. Self-care and monitoring recommended.',['#ffd166','var(--amber)']]:
+      s<=14?['Moderate','Consider speaking with a mental health professional.',['#f4a261','#f4a261']]:
+      ['Moderately Severe','Professional consultation is strongly recommended.',['#ff6b6b','var(--coral)']]
+  },
+  gad7: {
+    title: 'GAD-7 Anxiety Scale',
+    subtitle: 'Over the last 2 weeks, how often have you been bothered by the following?',
+    options: ['Not at all (0)','Several days (1)','More than half (2)','Nearly every day (3)'],
+    questions: [
+      'Feeling nervous, anxious, or on edge?',
+      'Not being able to stop or control worrying?',
+      'Worrying too much about different things?',
+      'Trouble relaxing?',
+      'Being so restless that it\'s hard to sit still?',
+      'Becoming easily annoyed or irritable?',
+      'Feeling afraid as if something awful might happen?'
+    ],
+    maxScore: 21,
+    interpret: s => s<=4?['Minimal Anxiety','Anxiety levels appear normal.',['#6bcb77','var(--green)']]:
+      s<=9?['Mild Anxiety','Some anxiety present. Mindfulness can help.',['#ffd166','var(--amber)']]:
+      s<=14?['Moderate Anxiety','Recommend speaking with a professional.',['#f4a261','#f4a261']]:
+      ['Severe Anxiety','Please consult a mental health professional.',['#ff6b6b','var(--coral)']]
+  },
+  pss: {
+    title: 'PSS-10 Perceived Stress Scale',
+    subtitle: 'In the last month, how often have you felt the following?',
+    options: ['Never (0)','Almost never (1)','Sometimes (2)','Fairly often (3)','Very often (4)'],
+    questions: [
+      'Been upset because of something unexpected?',
+      'Unable to control the important things in your life?',
+      'Felt nervous and stressed?',
+      'Felt confident about your ability to handle personal problems?',
+      'Felt that things were going your way?',
+      'Found that you could not cope with all the things you had to do?',
+      'Been able to control irritations in your life?',
+      'Felt that you were on top of things?',
+      'Been angered by things outside your control?',
+      'Felt difficulties were piling up so high you could not overcome them?'
+    ],
+    maxScore: 40,
+    interpret: s => s<=13?['Low Stress','Stress levels are manageable.',['#6bcb77','var(--green)']]:
+      s<=26?['Moderate Stress','Normal but worth monitoring. Relaxation techniques can help.',['#ffd166','var(--amber)']]:
+      ['High Stress','Significant stress. Consider professional support.',['#ff6b6b','var(--coral)']]
+  }
+};
+
+let activeAssessment = null;
+let currentQ = 0;
+let answers = [];
+
+function startAssessment(type) {
+  activeAssessment = ASSESSMENTS[type];
+  currentQ = 0;
+  answers = new Array(activeAssessment.questions.length).fill(null);
+  document.getElementById('questionnaire').style.display = 'block';
+  document.getElementById('result-panel').classList.remove('visible');
+  document.querySelectorAll('.assessment-card').forEach(c => c.classList.remove('active-card'));
+  document.getElementById('q-title').textContent = activeAssessment.title;
+  document.getElementById('q-subtitle').textContent = activeAssessment.subtitle;
+  renderQuestion();
+  document.getElementById('assessment-scroll').scrollTo({top:300,behavior:'smooth'});
+}
+
+function renderQuestion() {
+  const a = activeAssessment;
+  const q = a.questions[currentQ];
+  const total = a.questions.length;
+  document.getElementById('q-progress').style.width = ((currentQ/total)*100)+'%';
+  document.getElementById('q-counter').textContent = `${currentQ+1} / ${total}`;
+  document.getElementById('q-body').innerHTML = `
+    <div class="q-item">
+      <div class="q-text">${currentQ+1}. ${q}</div>
+      <div class="q-options">${a.options.map((o,i)=>`
+        <button class="q-opt${answers[currentQ]===i?' selected':''}" onclick="selectAnswer(${i})">${o}</button>
+      `).join('')}</div>
+    </div>`;
+}
+
+function selectAnswer(i) {
+  answers[currentQ] = i;
+  renderQuestion();
+}
+
+function nextQuestion() {
+  if(answers[currentQ] === null) { alert('Please select an answer.'); return; }
+  if(currentQ < activeAssessment.questions.length-1) { currentQ++; renderQuestion(); }
+  else { showResults(); }
+}
+function prevQuestion() {
+  if(currentQ > 0) { currentQ--; renderQuestion(); }
+}
+
+function showResults() {
+  const score = answers.reduce((a,b) => a + (b||0), 0);
+  const [label, text] = activeAssessment.interpret(score);
+  const max = activeAssessment.maxScore;
+  const pct = score/max;
+  const circumference = 264;
+
+  document.getElementById('questionnaire').style.display = 'none';
+  const rp = document.getElementById('result-panel');
+  rp.classList.add('visible');
+  document.getElementById('result-num').textContent = score;
+  document.getElementById('result-label').textContent = '/ '+max;
+  document.getElementById('result-heading').textContent = label;
+  document.getElementById('result-text').textContent = text;
+
+  const ring = document.getElementById('ring-fill');
+  ring.style.stroke = pct < 0.35 ? '#6bcb77' : pct < 0.6 ? '#ffd166' : '#ff6b6b';
+  setTimeout(() => { ring.style.strokeDashoffset = circumference - (pct * circumference); }, 100);
+  document.getElementById('assessment-scroll').scrollTo({top:0,behavior:'smooth'});
+}
+
+function resetAssessment() {
+  document.getElementById('questionnaire').style.display = 'none';
+  document.getElementById('result-panel').classList.remove('visible');
+  activeAssessment = null;
+}
+
+// ── Education ──
+const TOPICS = {
+  cbt: {
+    title: 'Cognitive Behavioural Therapy (CBT)',
+    meta: 'Therapy · 6 min read · Beginner',
+    body: `
+      <p>Cognitive Behavioural Therapy is one of the most evidence-based psychological treatments available today. It's grounded in the understanding that our thoughts, feelings, and behaviours are deeply interconnected — and that changing one can transform the others.</p>
+      <h3>The CBT Triangle</h3>
+      <p>At the heart of CBT is the cognitive triangle: <strong>Thoughts → Emotions → Behaviours</strong>. When we experience a negative event, our automatic thoughts (often distorted) create unpleasant emotions, which drive unhelpful behaviours that reinforce the original thoughts.</p>
+      <h3>Common Cognitive Distortions</h3>
+      <ul>
+        <li><strong>All-or-nothing thinking</strong> — seeing things in black and white, with no middle ground</li>
+        <li><strong>Catastrophising</strong> — imagining the worst possible outcome</li>
+        <li><strong>Mind reading</strong> — assuming you know what others are thinking</li>
+        <li><strong>Personalisation</strong> — blaming yourself for things outside your control</li>
+        <li><strong>Emotional reasoning</strong> — "I feel it, therefore it must be true"</li>
+      </ul>
+      <h3>Core CBT Techniques</h3>
+      <p>CBT therapists use thought records, behavioural experiments, and exposure tasks to help clients test their assumptions against reality. The goal is not to think positively, but to think accurately.</p>
+      <p>Research shows CBT is as effective as medication for moderate depression and anxiety disorders, with lower relapse rates.</p>
+    `
+  },
+  anxiety: {
+    title: 'Understanding Anxiety Disorders',
+    meta: 'Conditions · 8 min read · Intermediate',
+    body: `
+      <p>Anxiety is not a flaw — it's an ancient survival system. The same mechanism that saved our ancestors from predators now fires in response to emails, social situations, and traffic jams.</p>
+      <h3>The Neuroscience</h3>
+      <p>The amygdala, our brain's threat-detection centre, can trigger the fight-or-flight response before the thinking brain (prefrontal cortex) even registers what's happening. In anxiety disorders, this alarm system becomes oversensitive — misfiring in the absence of real danger.</p>
+      <h3>Types of Anxiety Disorders</h3>
+      <ul>
+        <li><strong>Generalised Anxiety Disorder (GAD)</strong> — persistent, excessive worry about everyday things</li>
+        <li><strong>Social Anxiety Disorder</strong> — intense fear of social or performance situations</li>
+        <li><strong>Panic Disorder</strong> — recurrent unexpected panic attacks</li>
+        <li><strong>Specific Phobias</strong> — intense fear of particular objects or situations</li>
+        <li><strong>OCD and related disorders</strong> — intrusive thoughts and compulsive behaviours</li>
+      </ul>
+      <h3>Evidence-Based Treatments</h3>
+      <p>CBT with exposure and response prevention is the gold standard. Medication (SSRIs, SNRIs) can be helpful, especially combined with therapy. Mindfulness-based approaches are increasingly well-supported.</p>
+    `
+  },
+  mindfulness: {
+    title: 'Mindfulness & Neuroplasticity',
+    meta: 'Practice · 5 min read · Beginner',
+    body: `
+      <p>The brain is not fixed. Neuroplasticity — the brain's ability to reorganise itself by forming new neural connections — means that how we direct our attention literally shapes the physical structure of our brains.</p>
+      <h3>What Mindfulness Does to the Brain</h3>
+      <p>Landmark research by Sara Lazar at Harvard showed that long-term meditators have increased cortical thickness in the insula and prefrontal cortex — regions involved in attention, interoception, and emotional regulation.</p>
+      <ul>
+        <li>Reduces amygdala reactivity (less stress response)</li>
+        <li>Increases grey matter in the hippocampus (memory, learning)</li>
+        <li>Strengthens the default mode network regulation (less mind-wandering)</li>
+        <li>Improves interoceptive awareness (sensing body states)</li>
+      </ul>
+      <h3>Getting Started</h3>
+      <p>You don't need hours of practice. Research shows meaningful benefits from as little as 8 minutes of focused attention practice per day. Start with the breath as an anchor, and treat every moment of noticing you've drifted as a success — that IS the practice.</p>
+    `
+  },
+  trauma: {
+    title: 'Trauma & the Nervous System',
+    meta: 'Trauma · 10 min read · Advanced',
+    body: `
+      <p>Trauma is not what happened to you — it's what happened inside you as a result. Bessel van der Kolk's seminal work demonstrated that trauma is fundamentally a body phenomenon, not just a memory problem.</p>
+      <h3>Polyvagal Theory</h3>
+      <p>Stephen Porges proposed that the autonomic nervous system has three hierarchical states, regulated by the vagus nerve:</p>
+      <ul>
+        <li><strong>Ventral vagal (safe/social)</strong> — calm, connected, curious</li>
+        <li><strong>Sympathetic (fight/flight)</strong> — mobilised, activated, anxious</li>
+        <li><strong>Dorsal vagal (freeze/shutdown)</strong> — immobilised, numb, depressed</li>
+      </ul>
+      <h3>Why Trauma Lives in the Body</h3>
+      <p>During overwhelming experience, the thinking brain goes offline. Trauma is encoded in subcortical structures as somatic memory — sensations, postures, impulses — rather than narrative. This is why traditional talk therapy alone is often insufficient.</p>
+      <h3>Pathways to Healing</h3>
+      <p>Effective trauma treatments include EMDR, somatic experiencing, sensorimotor psychotherapy, and trauma-informed CBT. All share a focus on helping the nervous system complete interrupted survival responses and regain a sense of safety in the body.</p>
+    `
+  }
+};
+
+function openTopic(key) {
+  const t = TOPICS[key];
+  if(!t) return;
+  document.getElementById('topic-title').textContent = t.title;
+  document.getElementById('topic-meta').textContent = t.meta;
+  document.getElementById('topic-body').innerHTML = t.body;
+  document.getElementById('topic-detail').classList.add('open');
+}
+function closeTopic() {
+  document.getElementById('topic-detail').classList.remove('open');
+}
+</script>
+</body>
+</html>
